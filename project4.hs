@@ -1,3 +1,6 @@
+-- file Name: project4.hs
+-- file Author: Marco Borth, 2894114
+-- description: project4 file containing Fix and Type Checking
 {-# LANGUAGE GADTs #-}
 
 -- import Control.Monad
@@ -47,6 +50,23 @@ divide :: Int -> Int -> Int
 divide x y | x - y >= 0 = 1 + divide (x - y) y
            | otherwise = 0
 
+elabFBAEC :: FBAE -> FBAE
+--elabFBAEC (Lambda f t a) = Lambda f (typeofM "type" f) (elabFBAEC a)
+elabFBAEC (App f a) = App (elabFBAEC f) (elabFBAEC a)
+--elabFBAEC (Bind i v b) = App (Lambda i (typeofM "type" v) (elabFBAEC v)) (elabFBAEC b)
+elabFBAEC (Id i) = Id i
+
+subst::String -> FBAE -> FBAE -> FBAE
+subst i v (Num n) = (Num n)
+subst i v (Plus l r) = Plus (subst i v l) (subst i v r) --Num (evalAE (Plus l r)) -- Plus (subst x v l) (subst x v r)
+subst i v (Minus l r) = Minus (subst i v l) (subst i v r) --Num(evalAE (Minus l r))
+subst i v (Mult l r) = Mult (subst i v l) (subst i v r)
+subst i v (Div l r) = Div (subst i v l) (subst i v r)
+subst i v (Bind i' v' b') = --Bind a (subst x v b) (subst x v c)
+  if i == i'
+    then Bind i' (subst i v v') b'
+    else Bind i' (subst i v v') (subst i v b')
+
 -- eval operation for Int
 
 evalInt :: FBAE -> Int
@@ -55,12 +75,11 @@ evalInt (And l r) = error "ERROR: Boolean Detected within Int operation!"
 evalInt (Or l r) = error "ERROR: Boolean Detected within Int operation!"
 evalInt (Leq l r) = error "ERROR: Boolean Detected within Int operation!"
 evalInt (IsZero zero) = error "ERROR: Boolean Detected within Int operation!"
---evalInt
 
 evalInt (Num n) =
   if n >= 0
     then n :: Int
-    else error "ERROR: Only Natural Numbers are Allowed for Int operations"
+    else error "ERROR: Only Natural Numbers are Allowed"
 
 evalInt (Plus l r) =
   let x = evalInt(l)
@@ -86,14 +105,9 @@ evalInt (Div l r) =
         then error "ERROR: Cannot divide by '0'"
         else divide x y
 
--- eval operation for Bool
+-- eval operation for Boolean
 
 evalBool :: FBAE -> Bool
---evalBool (Num n) = evalBool ( And (Boolean True) (Num n) )
---  let x = And ( (Boolean True) (Num n) do {
---  error "ERROR: Int Detected!"
---  return Nothing
--- }
 evalBool (Num n) = error "ERROR: Int Detected within Boolean Operation!"
 evalBool (Plus l r) = error "ERROR: Int Detected within Boolean Operation!"
 evalBool (Minus l r) = error "ERROR: Int Detected within Boolean Operation!"
@@ -134,22 +148,52 @@ evalBool (IsZero zero ) =
 -- Statically scoped eval
 
 evalM :: Env -> FBAE -> (Maybe FBAEVal)
-evalM e (Num n) = Just (NumV (evalInt (Num n) ) )
-evalM e (Plus l r) = Just (NumV (evalInt (Plus l r) ) )
-evalM e (Minus l r) = Just (NumV (evalInt (Minus l r) ) )
-evalM e (Mult l r) = Just (NumV (evalInt (Mult l r) ) )
-evalM e (Div l r) = Just (NumV (evalInt (Div l r) ) )
+evalM envi (Num n) =
+  if n >= 0
+    then Just (NumV n )
+    else error "ERROR: Only Natural Numbers are Allowed for Int operations"
 
--- evalM e (Bind i v b) = Just (ClosureV (Bind i v b) )
--- evalM e (Lambda i b) = Just (ClosureV (Lambda i b) )
--- evalM e (App f a) = Just (ClosureV (App f a) )
--- evalM e (Id i) = Just (ClosureV (Id i) )
+evalM envi (Plus l r) =
+  let x = evalInt l
+      y = evalInt r
+      in Just (NumV (x + y))
 
-evalM e (Boolean b) = Just (BooleanV (evalBool (Boolean b) ) )
-evalM e (And l r) = Just (BooleanV (evalBool (And l r) ) )
-evalM e (Or l r) = Just (BooleanV (evalBool (Or l r) ) )
-evalM e (Leq l r) = Just (BooleanV (evalBool (Leq l r) ) )
-evalM e (IsZero zero) = Just (BooleanV (evalBool (IsZero zero) ) )
+
+evalM envi (Minus l r) =
+  let x = evalInt l
+      y = evalInt r
+      in if x >= y
+        then Just (NumV (x - y))
+        else error "ERROR: Resulting Difference must be Natural"
+
+evalM envi (Mult l r) =
+  let x = evalInt l
+      y = evalInt r
+      in Just (NumV (x * y))
+
+evalM envi (Div l r) =
+  let x = evalInt l
+      y = evalInt r
+      in if y == 0
+        then error "ERROR: Cannot divide by '0'"
+        else Just (NumV (divide x y))
+
+evalM envi (Bind i v b) = Just (ClosureV "Bind" (Bind i v b) envi)
+evalM envi (Lambda i t b) = Just (ClosureV "Lambda" (Lambda i t b) envi)
+evalM envi (App f a) =  Just (ClosureV "App" (App f a) envi)  -- evalM envi (elabFBAEC x)
+evalM envi (Id i) = Just (ClosureV "Id" (Id i) envi)
+
+evalM envi (Boolean b) = Just (BooleanV (evalBool (Boolean b) ) )
+evalM envi (And l r) = Just (BooleanV (evalBool (And l r) ) )
+evalM envi (Or l r) = Just (BooleanV (evalBool (Or l r) ) )
+evalM envi (Leq l r) = Just (BooleanV (evalBool (Leq l r) ) )
+evalM envi (IsZero zero) = Just (BooleanV (evalBool (IsZero zero) ) )
+
+evalM envi (If c t e ) =
+  if evalM envi c == Just (BooleanV True)
+    then evalM envi t
+    else evalM envi e
+
 evalM _ _ = Nothing
 
 -- Type inference function

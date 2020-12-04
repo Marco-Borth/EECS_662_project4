@@ -1,3 +1,7 @@
+-- file Name: testcases.txt
+-- file Author: Marco Borth, 2894114
+-- description: text file containing all Test cases for functions tested with Linux Terminal.
+
 -- evalM function test Cases
 *Main> evalM [] (Num 4)
 Just (NumV 4)
@@ -72,14 +76,17 @@ Just (NumV *** Exception: ERROR: Cannot divide by '0'
 CallStack (from HasCallStack):
   error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:79:14 in main:Main
 
+*Main> evalM [] (Bind "x" (Num 4) (Num 6))
+Just (ClosureV "Bind" (Bind "x" (Num 4) (Num 6)) [])
 
-  Bind :: String -> FBAE -> FBAE -> FBAE
-  Lambda :: String -> TFBAE -> FBAE -> FBAE
-  App :: FBAE -> FBAE -> FBAE
-  Id :: String -> FBAE
+*Main> evalM [] (Lambda "x" (TNum) (Num 6))
+Just (ClosureV "Lambda" (Lambda "x" TNum (Num 6)) [])
 
+*Main> evalM [] (App (Num 4) (Num 6))
+Just (ClosureV "App" (App (Num 4) (Num 6)) [])
 
-
+*Main> evalM [] (Id "x")
+Just (ClosureV "Id" (Id "x") [])
 
 *Main> evalM [] (Boolean True)
 Just (BooleanV True)
@@ -167,7 +174,63 @@ Just (BooleanV False)
 Just (BooleanV True)
 *Main> evalM [] (Leq (Plus (Num 2) (Num 6)) (Num 4))
 Just (BooleanV False)
-*Main>
+
+*Main> evalM [] (If (Boolean True) (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Boolean True) (Boolean True) (Boolean False))
+Just (BooleanV True)
+*Main> evalM [] (If (Boolean True) (Boolean True) (Num 4))
+Just (BooleanV True)
+*Main> evalM [] (If (Boolean True) (Boolean False) (Boolean True))
+Just (BooleanV False)
+*Main> evalM [] (If (Boolean True) (Boolean False) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Boolean True) (Boolean False) (Num 4))
+Just (BooleanV False)
+*Main> evalM [] (If (Boolean True) (Num 8) (Boolean True))
+Just (NumV 8)
+*Main> evalM [] (If (Boolean True) (Num 8) (Boolean False))
+Just (NumV 8)
+*Main> evalM [] (If (Boolean True) (Num 8) (Num 4))
+Just (NumV 8)
+
+*Main> evalM [] (If (Boolean False) (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Boolean False) (Boolean True) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Boolean False) (Boolean True) (Num 20))
+Just (NumV 20)
+*Main> evalM [] (If (Boolean False) (Boolean False) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Boolean False) (Boolean False) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Boolean False) (Boolean False) (Num 20))
+Just (NumV 20)
+*Main> evalM [] (If (Boolean False) (Num 4) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Boolean False) (Num 4) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Boolean False) (Num 4) (Num 20))
+Just (NumV 20)
+
+*Main> evalM [] (If (Num 19) (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Num 19) (Boolean True) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Num 19) (Boolean True) (Num 4))
+Just (NumV 4)
+*Main> evalM [] (If (Num 19) (Boolean False) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Num 19) (Boolean False) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Num 19) (Boolean False) (Num 4))
+Just (NumV 4)
+*Main> evalM [] (If (Num 19) (Num 15) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (If (Num 19) (Num 15) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (If (Num 19) (Num 15) (Num 4))
+Just (NumV 4)
 
 
 

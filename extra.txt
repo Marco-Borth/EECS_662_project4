@@ -1,0 +1,24 @@
+evalM envi (Boolean b) = Just (BooleanV (evalBool (Boolean b) ) )
+--  if b == True || b == False
+--    then Just (BooleanV b)
+--    else error "ERROR: Only Boolean Values are Allowed within Boolean operations"
+
+evalM envi (And l r) = Just (BooleanV (evalBool (And l r) ) )
+--  let x = evalM envi l
+--      y = evalM envi r
+--      in if x == Just (BooleanV True)
+--        then y
+--        else Just
+
+evalM envi (Or l r) = Just (BooleanV (evalBool (Or l r) ) )
+--  let x = evalM envi l
+--      y = evalM envi r
+--      in if x == Just (BooleanV True)
+--        then y
+--        else x
+
+evalM envi (Bind i v b) = Just (ClosureV (Bind i v b) )
+--do {
+-- let v' = evalM envi v
+--  in evalM envi (subst i v b)
+--}
