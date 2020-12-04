@@ -1,0 +1,88 @@
+-- evalM function test Cases
+*Main> evalM [] (Num 4)
+Just (NumV 4)
+*Main> evalM [] (Num 0)
+Just (NumV 0)
+*Main> evalM [] (Num (-1))
+Just (NumV *** Exception: ERROR: Only Natural Numbers are Allowed
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:50:10 in main:Main
+
+*Main> evalM [] (Plus (Num 4) (Num 9))
+Just (NumV 13)
+
+*Main> evalM [] (Plus (Num 0) (Num 9))
+Just (NumV 9)
+*Main> evalM [] (Plus (Num 4) (Num 0))
+Just (NumV 4)
+*Main> evalM [] (Plus (Num 0) (Num 0))
+Just (NumV 0)
+
+*Main> evalM [] (Minus (Num 9) (Num 4))
+Just (NumV 5)
+*Main> evalM [] (Minus (Num 9) (Num 8))
+Just (NumV 1)
+*Main> evalM [] (Minus (Num 9) (Num 0))
+Just (NumV 9)
+*Main> evalM [] (Minus (Num 9) (Num 9))
+Just (NumV 0)
+*Main> evalM [] (Minus (Num 9) (Num 10))
+Just (NumV *** Exception: ERROR: Resulting Difference must be Natural
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:62:14 in main:Main
+*Main> evalM [] (Minus (Num 0) (Num 9))
+Just (NumV *** Exception: ERROR: Resulting Difference must be Natural
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:62:14 in main:Main
+*Main> evalM [] (Minus (Num 0) (Num 0))
+Just (NumV 0)
+
+*Main> evalM [] (Mult (Num 0) (Num 0))
+Just (NumV 0)
+*Main> evalM [] (Mult (Num 0) (Num 3))
+Just (NumV 0)
+*Main> evalM [] (Mult (Num 2) (Num 0))
+Just (NumV 0)
+*Main> evalM [] (Mult (Num 2) (Num 1))
+Just (NumV 2)
+*Main> evalM [] (Mult (Num 2) (Num 5))
+Just (NumV 10)
+*Main> evalM [] (Mult (Num 10) (Num 5))
+Just (NumV 50)
+
+*Main> evalM [] (Div (Num 10) (Num 5))
+Just (NumV 2)
+*Main> evalM [] (Div (Num 15) (Num 5))
+Just (NumV 3)
+*Main> evalM [] (Div (Num 10) (Num 2))
+Just (NumV 5)
+*Main> evalM [] (Div (Num 10) (Num 1))
+Just (NumV 10)
+*Main> evalM [] (Div (Num 10) (Num 10))
+Just (NumV 1)
+*Main> evalM [] (Div (Num 10) (Num 11))
+Just (NumV 0)
+*Main> evalM [] (Div (Num 0) (Num 11))
+Just (NumV 0)
+*Main> evalM [] (Div (Num 14) (Num 0))
+Just (NumV *** Exception: ERROR: Cannot divide by '0'
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:79:14 in main:Main
+*Main> evalM [] (Div (Num 0) (Num 0))
+Just (NumV *** Exception: ERROR: Cannot divide by '0'
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:79:14 in main:Main
+
+
+  Bind :: String -> FBAE -> FBAE -> FBAE
+  Lambda :: String -> TFBAE -> FBAE -> FBAE
+  App :: FBAE -> FBAE -> FBAE
+  Id :: String -> FBAE
+
+
+
+
+*Main> evalM [] (Boolean True)
+Just (BooleanV True)
+*Main> evalM [] (Boolean False)
+Just (BooleanV False)

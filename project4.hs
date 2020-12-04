@@ -41,9 +41,69 @@ data FBAEVal where
 
 type Env = [(String,FBAEVal)]
 
+-- divide operation for Int
+
+divide :: Int -> Int -> Int
+divide x y | x - y >= 0 = 1 + divide (x - y) y
+           | otherwise = 0
+
+-- eval operation for Int
+
+evalInt :: FBAE -> Int
+evalInt (Num n) =
+  if n >= 0
+    then n :: Int
+    else error "ERROR: Only Natural Numbers are Allowed"
+
+evalInt (Plus l r) =
+  let x = evalInt(l)
+      y = evalInt(r)
+      in x + y
+
+evalInt (Minus l r) =
+  let x = evalInt(l)
+      y = evalInt(r)
+      in if x >= y
+        then x - y
+        else error "ERROR: Resulting Difference must be Natural"
+
+evalInt (Mult l r) =
+  let x = evalInt(l)
+      y = evalInt(r)
+      in x * y
+
+evalInt (Div l r) =
+  let x = evalInt(l)
+      y = evalInt(r)
+      in if y == 0
+        then error "ERROR: Cannot divide by '0'"
+        else divide x y
+
+-- eval operation for Bool
+
+evalBool :: FBAE -> Bool
+evalBool (Boolean b) = b
+
+evalBool (And l r) =
+  let x = evalBool(l)
+      y = evalBool(r)
+      in if x == True
+        then y
+        else False
+
 -- Statically scoped eval
-         
+
 evalM :: Env -> FBAE -> (Maybe FBAEVal)
+evalM e (Num n) = Just (NumV (evalInt (Num n) ) )
+evalM e (Plus l r) = Just (NumV (evalInt (Plus l r) ) )
+evalM e (Minus l r) = Just (NumV (evalInt (Minus l r) ) )
+evalM e (Mult l r) = Just (NumV (evalInt (Mult l r) ) )
+evalM e (Div l r) = Just (NumV (evalInt (Div l r) ) )
+
+-- evalM e (Bind i v b) = Just (ClosureV (Bind i v b) )
+
+evalM e (Boolean b) = Just (BooleanV (evalBool (Boolean b) ) )
+evalM e (And l r) = Just (BooleanV (evalBool (And l r) ) )
 evalM _ _ = Nothing
 
 -- Type inference function
