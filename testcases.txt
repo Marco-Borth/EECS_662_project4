@@ -233,6 +233,49 @@ Just (BooleanV False)
 *Main> evalM [] (If (Num 19) (Num 15) (Num 4))
 Just (NumV 4)
 
+*Main> evalM [] (Fix (Num 5))
+Nothing
+*Main> evalM [] (Fix (Boolean True))
+Nothing
+*Main> evalM [] (Fix (Bind "x" (Num 4) (Num 8)))
+Just (ClosureV "Bind" (Bind "x" (Num 4) (Num 8)) [])
+*Main> evalM [] (Fix (Bind "x" (Num 4) (Boolean True)))
+Just (ClosureV "Bind" (Bind "x" (Num 4) (Boolean True)) [])
+*Main> evalM [] (Fix (Bind "x" (Boolean False) (Num 8)))
+Just (ClosureV "Bind" (Bind "x" (Boolean False) (Num 8)) [])
+*Main> evalM [] (Fix (Bind "x" (Boolean False) (Boolean True)))
+Just (ClosureV "Bind" (Bind "x" (Boolean False) (Boolean True)) [])
+*Main> evalM [] (Fix (App (Num 4) (Num 8)))
+Just (ClosureV "App" (App (Num 4) (Num 8)) [])
+*Main> evalM [] (Fix (App (Num 4) (Boolean True)))
+Just (ClosureV "App" (App (Num 4) (Boolean True)) [])
+*Main> evalM [] (Fix (App (Boolean True) (Num 8)))
+Just (ClosureV "App" (App (Boolean True) (Num 8)) [])
+*Main> evalM [] (Fix (App (Boolean True) (Boolean False)))
+Just (ClosureV "App" (App (Boolean True) (Boolean False)) [])
+*Main> evalM [] (Fix (Id "x"))
+Nothing
+*Main> evalM [] (Fix (Id "x"))
+Nothing
+*Main> evalM [] (Fix (Lambda "x" TNum (Num 4)))
+Just (ClosureV "Lambda" (Lambda "x" TNum (Num 4)) [])
+*Main> evalM [] (Fix (Lambda "x" TNum (Boolean True)))
+Nothing
+*Main> evalM [] (Fix (Lambda "x" TNum (Id "x")))
+Nothing
+*Main> evalM [] (Fix (Lambda "x" TBool (Num 4)))
+Nothing
+*Main> evalM [] (Fix (Lambda "x" TBool (Boolean True)))
+Just (ClosureV "Lambda" (Lambda "x" TBool (Boolean True)) [])
+*Main> evalM [] (Fix (Lambda "x" TBool (Boolean False)))
+Just (ClosureV "Lambda" (Lambda "x" TBool (Boolean False)) [])
+*Main> evalM [] (Fix (Lambda "x" TBool (Id "x")))
+Nothing
+*Main> evalM [] (Fix (Plus (Num 5) (Num 6)))
+Nothing
+*Main> evalM [] (Fix (And (Boolean True) (Boolean False)))
+Nothing
+
 -- evalM invalid value types in operations Cases
 
 *Main> evalM [] (Plus (Num 4) (Boolean True))
@@ -456,6 +499,25 @@ Just TBool
 *Main> typeofM [] (If (Num 4) (Boolean True) (Boolean True))
 Nothing
 
+*Main> typeofM [] (Fix (Num 5))
+Nothing
+*Main> typeofM [] (Fix (Boolean True))
+Nothing
+*Main> typeofM [] (Fix (Id "x"))
+Nothing
+*Main> typeofM [] (Fix (Lambda "x" TNum (Num 5)))
+Nothing
+*Main> typeofM [] (Fix (Lambda "x" TNum (Boolean True)))
+Nothing
+*Main> typeofM [] (Fix (Lambda "x" TBool (Num 5)))
+Nothing
+*Main> typeofM [] (Fix (Lambda "x" TBool (Boolean False)))
+Nothing
+*Main> typeofM [] (Fix (Lambda "x" ((:->:) TNum TNum) (Num 5)))
+Nothing
+*Main> typeofM [] (Fix (Lambda "x" ((:->:) TNum TNum) (Boolean True)))
+Nothing
+
 -- 4. interp test cases
 
 *Main> interp (Num 4)
@@ -649,6 +711,9 @@ Just (BooleanV False)
 Just (BooleanV True)
 *Main> interp (If (Boolean False) (Boolean False) (Boolean False))
 Just (BooleanV False)
+
+*Main> interp (Fix (Lambda "x" ((:->:) TNum TNum) (Num 5)))
+Nothing
 
 *Main> interp test1
 Just (ClosureV "Bind" (Bind "f" (Lambda "g" ((:->:) TNum TNum) (Lambda "x" TNum (If (IsZero (Id "x")) (Num 1) (Mult (Id "x") (App (Id "g") (Minus (Id "x") (Num 1))))))) (App (Fix (Id "f")) (Num 3))) [])

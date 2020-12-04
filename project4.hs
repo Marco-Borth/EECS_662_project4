@@ -62,10 +62,30 @@ subst i v (Plus l r) = Plus (subst i v l) (subst i v r) --Num (evalAE (Plus l r)
 subst i v (Minus l r) = Minus (subst i v l) (subst i v r) --Num(evalAE (Minus l r))
 subst i v (Mult l r) = Mult (subst i v l) (subst i v r)
 subst i v (Div l r) = Div (subst i v l) (subst i v r)
+
 subst i v (Bind i' v' b') = --Bind a (subst x v b) (subst x v c)
   if i == i'
     then Bind i' (subst i v v') b'
     else Bind i' (subst i v v') (subst i v b')
+
+subst i v (Lambda i' t b) = Lambda i' t (subst i v b)
+subst i v (App f a) = App (subst i v f) (subst i v a)
+subst i v (Id a) =
+  if i == a
+    then v
+    else Id a
+
+subst i v (Boolean b) = (Boolean b)
+subst i v (And l r) = And (subst i v l) (subst i v r)
+subst i v (Or l r) = Or (subst i v l) (subst i v r)
+subst i v (Leq l r) = Leq (subst i v l) (subst i v r)
+subst i v (IsZero zero) = IsZero (subst i v zero)
+subst i v (If c t e) =
+  if c == Boolean True
+    then subst i v t
+    else subst i v e
+
+subst i v (Fix f) = subst i v f
 
 -- eval operation for Int
 
@@ -193,7 +213,16 @@ evalM envi (If c t e ) =
     then evalM envi t
     else evalM envi e
 
-evalM _ _ = Nothing
+evalM envi (Fix f) = do {
+  (ClosureV i b e) <- (evalM envi f) ;
+  let s = [];
+      t = Nothing;
+      in if typeofM s f == Just TNum
+        then evalM e (subst i (Fix (Lambda i TNum b)) b)
+        else if typeofM s f == Just TBool
+          then evalM e (subst i (Fix (Lambda i TBool b)) b)
+          else Nothing
+}
 
 -- Type inference function
 
@@ -242,7 +271,7 @@ typeofM s (Lambda i t b) = --lookup i s
  if t == TNum || t == TBool
   then if Just t == typeofM s b
     then typeofM s b
-    else Nothing 
+    else Nothing
   else Nothing
 
 typeofM s (App f a) =
@@ -290,7 +319,10 @@ typeofM s (If c t e) =
       else Nothing
     else Nothing
 
-typeofM _ _ = Nothing
+typeofM s (Fix t) = do {
+  (d :->: r) <- typeofM s t ;
+  return r
+}
 
 compareType:: Cont -> FBAE -> FBAE -> (Maybe TFBAE)
 compareType s l r =
