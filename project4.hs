@@ -233,10 +233,24 @@ typeofM s (Div l r) =
       else Nothing
     else Nothing
 
---typeofM s (Bind i v b) = compareType s v b
---typeofM s (Lambda i t b) = lookup i s
---typeofM s (App f a) = compareType s f a
---typeofM s (Id i) = lookup i s
+typeofM s (Bind i v b) =
+ if typeofM s v /= Nothing
+  then typeofM s v
+  else typeofM s b
+
+typeofM s (Lambda i t b) = --lookup i s
+ if t == TNum || t == TBool
+  then if Just t == typeofM s b
+    then typeofM s b
+    else Nothing 
+  else Nothing
+
+typeofM s (App f a) =
+  if typeofM s f /= Nothing
+   then typeofM s f
+   else typeofM s a
+
+typeofM s (Id i) = lookup i s
 
 typeofM s (Boolean b) =
   if b == True || b == False
@@ -287,7 +301,13 @@ compareType s l r =
 -- Interpreter
 
 interp :: FBAE -> (Maybe FBAEVal)
-interp _ = Nothing
+interp expr =
+  let envi = []
+      s = []
+      t = typeofM s expr
+      in if t == Just TNum || t == Just TBool
+        then evalM envi expr
+        else Nothing
 
 -- Factorial function for testing evalM and typeofM.  the type of test1 should
 -- be TNum and the result of evaluating test1 should be (NumV 6).  Remember

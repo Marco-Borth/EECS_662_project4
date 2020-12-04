@@ -426,3 +426,200 @@ Nothing
 Just TBool
 *Main> typeofM [] (If (Num 4) (Boolean True) (Boolean True))
 Nothing
+
+-- 4. interp test cases
+
+*Main> interp (Num 4)
+Just (NumV 4)
+
+*Main> interp (Plus (Num 4) (Num 5))
+Just (NumV 9)
+*Main> interp (Plus (Num 4) (Boolean True))
+Nothing
+
+*Main> interp (Minus (Num 8) (Num 5))
+Just (NumV 3)
+*Main> interp (Minus (Num 8) (Num 8))
+Just (NumV 0)
+*Main> interp (Minus (Num 8) (Num 9))
+*** Exception: ERROR: Resulting Difference must be Natural
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:166:14 in main:Main
+*Main> interp (Minus (Num 8) (Boolean False))
+Nothing
+
+*Main> interp (Mult (Num 8) (Num 3))
+Just (NumV 24)
+*Main> interp (Mult (Num 8) (Id "x"))
+Nothing
+
+*Main> interp (Div (Num 8) (Num 3))
+Just (NumV 2)
+*Main> interp (Div (Num 8) (Num 1))
+Just (NumV 8)
+*Main> interp (Div (Num 8) (Num 8))
+Just (NumV 1)
+*Main> interp (Div (Num 8) (Num 10))
+Just (NumV 0)
+*Main> interp (Div (Num 0) (Num 1))
+Just (NumV 0)
+*Main> interp (Div (Num 3) (Num 0))
+*** Exception: ERROR: Cannot divide by '0'
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:177:14 in main:Main
+*Main> interp (Div (Num 0) (Num 0))
+*** Exception: ERROR: Cannot divide by '0'
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:177:14 in main:Main
+*Main> interp (Div (Num 8) (Boolean False))
+Nothing
+*Main> interp (Div (Boolean True) (Num 8))
+Nothing
+
+*Main> interp (Bind "x" (Num 4) (Num 6))
+Just (ClosureV "Bind" (Bind "x" (Num 4) (Num 6)) [])
+*Main> interp (Bind "x" (Num 4) (Boolean True))
+Just (ClosureV "Bind" (Bind "x" (Num 4) (Boolean True)) [])
+*Main> interp (Bind "x" (Num 4) (Id "x"))
+Just (ClosureV "Bind" (Bind "x" (Num 4) (Id "x")) [])
+*Main> interp (Bind "x" (Boolean True) (Num 6))
+Just (ClosureV "Bind" (Bind "x" (Boolean True) (Num 6)) [])
+*Main> interp (Bind "x" (Boolean True) (Boolean False))
+Just (ClosureV "Bind" (Bind "x" (Boolean True) (Boolean False)) [])
+*Main> interp (Bind "x" (Boolean True) (Id "x"))
+Just (ClosureV "Bind" (Bind "x" (Boolean True) (Id "x")) [])
+*Main> interp (Bind "x" (Id "y") (Num 6))
+Just (ClosureV "Bind" (Bind "x" (Id "y") (Num 6)) [])
+*Main> interp (Bind "x" (Id "y") (Boolean True))
+Just (ClosureV "Bind" (Bind "x" (Id "y") (Boolean True)) [])
+*Main> interp (Bind "x" (Id "y") (Id "z"))
+Nothing
+
+*Main> interp (Lambda "x" TNum (Num 5))
+Just (ClosureV "Lambda" (Lambda "x" TNum (Num 5)) [])
+*Main> interp (Lambda "x" TNum (Boolean True))
+Nothing
+*Main> interp (Lambda "x" TNum (Id "x"))
+Nothing
+*Main> interp (Lambda "x" TBool (Num 5))
+Nothing
+*Main> interp (Lambda "x" TBool (Boolean True))
+Just (ClosureV "Lambda" (Lambda "x" TBool (Boolean True)) [])
+*Main> interp (Lambda "x" TBool (Id "y"))
+Nothing
+*Main> interp (Lambda "x" ((:->:) TNum TNum) (Num 5))
+Nothing
+*Main> interp (Lambda "x" ((:->:) TNum TNum) (Boolean False))
+Nothing
+*Main> interp (Lambda "x" ((:->:) TNum TNum) (Id "x"))
+Nothing
+
+*Main> interp (App (Num 4) (Num 5))
+Just (ClosureV "App" (App (Num 4) (Num 5)) [])
+*Main> interp (App (Num 4) (Boolean True))
+Just (ClosureV "App" (App (Num 4) (Boolean True)) [])
+*Main> interp (App (Num 4) (Id "x"))
+Just (ClosureV "App" (App (Num 4) (Id "x")) [])
+*Main> interp (App (Boolean False) (Num 5))
+Just (ClosureV "App" (App (Boolean False) (Num 5)) [])
+*Main> interp (App (Boolean False) (Boolean True))
+Just (ClosureV "App" (App (Boolean False) (Boolean True)) [])
+*Main> interp (App (Boolean False) (Id "x"))
+Just (ClosureV "App" (App (Boolean False) (Id "x")) [])
+*Main> interp (App (Id "y") (Num 5))
+Just (ClosureV "App" (App (Id "y") (Num 5)) [])
+*Main> interp (App (Id "y") (Boolean True))
+Just (ClosureV "App" (App (Id "y") (Boolean True)) [])
+*Main> interp (App (Id "y") (Id "x"))
+Nothing
+
+*Main> interp (Id "x")
+Nothing
+
+*Main> interp (Boolean True)
+Just (BooleanV True)
+*Main> interp (Boolean False)
+Just (BooleanV False)
+
+*Main> interp (Boolean True)
+Just (BooleanV True)
+*Main> interp (Boolean False)
+Just (BooleanV False)
+*Main> interp (And (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> interp (And (Boolean True) (Boolean False))
+Just (BooleanV False)
+*Main> interp (And (Boolean False) (Boolean True))
+Just (BooleanV False)
+*Main> interp (And (Boolean False) (Boolean False))
+Just (BooleanV False)
+*Main> interp (And (Boolean False) (Num 5))
+Nothing
+*Main> interp (And (Num 4) (Boolean False))
+Nothing
+
+*Main> interp (Or (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> interp (Or (Boolean True) (Boolean False))
+Just (BooleanV True)
+*Main> interp (Or (Boolean False) (Boolean True))
+Just (BooleanV True)
+*Main> interp (Or (Boolean False) (Boolean False))
+Just (BooleanV False)
+*Main> interp (Or (Boolean False) (Id "f"))
+Nothing
+*Main> interp (Or (Id "a") (Boolean False))
+Nothing
+
+*Main> interp (Leq (Num 3) (Num 9))
+Just (BooleanV True)
+*Main> interp (Leq (Num 9) (Num 9))
+Just (BooleanV True)
+*Main> interp (Leq (Num 10) (Num 9))
+Just (BooleanV False)
+*Main> interp (Leq (Num 10) (Boolean True))
+Nothing
+
+*Main> interp (IsZero (Num 7))
+Just (BooleanV False)
+*Main> interp (IsZero (Num 0))
+Just (BooleanV True)
+*Main> interp (IsZero (Num (-1)))
+Nothing
+*Main> interp (IsZero (Boolean False))
+Nothing
+
+*Main> interp (If (Boolean True) (Num 5) (Num 8))
+Just (NumV 5)
+*Main> interp (If (Boolean False) (Num 5) (Num 8))
+Just (NumV 8)
+*Main> interp (If (Num 3) (Num 5) (Num 8))
+Nothing
+*Main> interp (If (Boolean True) (Num 5) (Boolean True))
+Nothing
+*Main> interp (If (Boolean True) (Boolean False) (Num 8))
+Nothing
+*Main> interp (If (Boolean True) (Boolean True) (Boolean True))
+Just (BooleanV True)
+
+*Main> interp (If (Boolean True) (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> interp (If (Boolean True) (Boolean True) (Boolean False))
+Just (BooleanV True)
+*Main> interp (If (Boolean True) (Boolean False) (Boolean True))
+Just (BooleanV False)
+*Main> interp (If (Boolean True) (Boolean False) (Boolean False))
+Just (BooleanV False)
+*Main> interp (If (Boolean True) (Boolean True) (Boolean False))
+Just (BooleanV True)
+*Main> interp (If (Boolean False) (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> interp (If (Boolean False) (Boolean True) (Boolean False))
+Just (BooleanV False)
+*Main> interp (If (Boolean False) (Boolean False) (Boolean True))
+Just (BooleanV True)
+*Main> interp (If (Boolean False) (Boolean False) (Boolean False))
+Just (BooleanV False)
+
+*Main> interp test1
+Just (ClosureV "Bind" (Bind "f" (Lambda "g" ((:->:) TNum TNum) (Lambda "x" TNum (If (IsZero (Id "x")) (Num 1) (Mult (Id "x") (App (Id "g") (Minus (Id "x") (Num 1))))))) (App (Fix (Id "f")) (Num 3))) [])
