@@ -158,7 +158,6 @@ evalM envi (Plus l r) =
       y = evalInt r
       in Just (NumV (x + y))
 
-
 evalM envi (Minus l r) =
   let x = evalInt l
       y = evalInt r
@@ -201,8 +200,89 @@ evalM _ _ = Nothing
 type Cont = [(String,TFBAE)]
 
 typeofM :: Cont -> FBAE -> (Maybe TFBAE)
+typeofM s (Num n) =
+  if n >= 0
+    then Just TNum
+    else Nothing
+
+typeofM s (Plus l r) =
+  if typeofM s l == Just TNum
+    then if typeofM s r == Just TNum
+      then Just TNum
+      else Nothing
+    else Nothing
+
+typeofM s (Minus l r) =
+  if typeofM s l == Just TNum
+    then if typeofM s r == Just TNum
+      then Just TNum
+      else Nothing
+    else Nothing
+
+typeofM s (Mult l r) =
+  if typeofM s l == Just TNum
+    then if typeofM s r == Just TNum
+      then Just TNum
+      else Nothing
+    else Nothing
+
+typeofM s (Div l r) =
+  if typeofM s l == Just TNum
+    then if typeofM s r == Just TNum
+      then Just TNum
+      else Nothing
+    else Nothing
+
+--typeofM s (Bind i v b) = compareType s v b
+--typeofM s (Lambda i t b) = lookup i s
+--typeofM s (App f a) = compareType s f a
+--typeofM s (Id i) = lookup i s
+
+typeofM s (Boolean b) =
+  if b == True || b == False
+    then Just TBool
+    else Nothing
+
+typeofM s (And l r) =
+  if typeofM s l == Just TBool
+    then if typeofM s r == Just TBool
+      then Just TBool
+      else Nothing
+    else Nothing
+
+typeofM s (Or l r) =
+  if typeofM s l == Just TBool
+    then if typeofM s r == Just TBool
+      then Just TBool
+      else Nothing
+    else Nothing
+
+typeofM s (Leq l r) =
+  if typeofM s l == Just TNum
+    then if typeofM s r == Just TNum
+      then Just TBool
+      else Nothing
+    else Nothing
+
+typeofM s (IsZero zero) =
+  if typeofM s zero == Just TNum
+    then Just TBool
+    else Nothing
+
+typeofM s (If c t e) =
+  if typeofM s c == Just TBool
+    then if typeofM s t == typeofM s e
+      then Just TBool
+      else Nothing
+    else Nothing
+
 typeofM _ _ = Nothing
 
+compareType:: Cont -> FBAE -> FBAE -> (Maybe TFBAE)
+compareType s l r =
+  if typeofM s l == typeofM s r
+    then typeofM s l
+    else Nothing
 
 -- Interpreter
 
@@ -210,7 +290,7 @@ interp :: FBAE -> (Maybe FBAEVal)
 interp _ = Nothing
 
 -- Factorial function for testing evalM and typeofM.  the type of test1 should
--- be TNum and the result of evaluating test1`should be (NumV 6).  Remember
+-- be TNum and the result of evaluating test1 should be (NumV 6).  Remember
 -- that Just is used to return both the value and type.
 
 test1 = (Bind "f" (Lambda "g" ((:->:) TNum TNum)

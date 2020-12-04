@@ -2,7 +2,8 @@
 -- file Author: Marco Borth, 2894114
 -- description: text file containing all Test cases for functions tested with Linux Terminal.
 
--- evalM function test Cases
+-- 1. evalM function test Cases
+
 *Main> evalM [] (Num 4)
 Just (NumV 4)
 *Main> evalM [] (Num 0)
@@ -305,3 +306,123 @@ CallStack (from HasCallStack):
 Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
 CallStack (from HasCallStack):
   error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:96:22 in main:Main
+
+-- 2. fix FBAE test cases
+
+-- 3. typeofM test cases
+
+*Main> typeofM [] (Num 4)
+Just TNum
+*Main> typeofM [] (Num 0)
+Just TNum
+*Main> typeofM [] (Num (-5))
+Nothing
+
+*Main> typeofM [] (Plus (Num 4) (Num 5))
+Just TNum
+*Main> typeofM [] (Plus (Num 4) (Boolean True))
+Nothing
+*Main> typeofM [] (Plus (Boolean True) (Num 5))
+Nothing
+*Main> typeofM [] (Plus (Num 4) (Id "x"))
+Nothing
+*Main> typeofM [] (Plus (Id "x") (Num 5))
+Nothing
+
+*Main> typeofM [] (Minus (Num 4) (Num 5))
+Just TNum
+*Main> typeofM [] (Minus (Num 4) (Num 4))
+Just TNum
+*Main> typeofM [] (Minus (Num 4) (Num 2))
+Just TNum
+
+*Main> typeofM [] (Mult (Num 4) (Num 5))
+Just TNum
+
+*Main> typeofM [] (Div (Num 4) (Num 5))
+Just TNum
+
+*Main> typeofM [] (Bind "x" (Num 4) (Num 7))
+Just TNum
+*Main> typeofM [] (Bind "x" (Num 4) (Boolean True))
+Nothing
+*Main> typeofM [] (Bind "x" (Boolean True) (Num 7))
+Nothing
+*Main> typeofM [] (Bind "x" (Boolean True) (Boolean False))
+Just TBool
+
+-------------------------------------------------------------------------------
+
+*Main> typeofM [] (App (Boolean True) (Boolean False))
+Just TBool
+*Main> typeofM [] (App (Boolean True) (Num 4))
+Nothing
+*Main> typeofM [] (App (Num 7) (Num 4))
+Just TNum
+*Main> typeofM [] (App (Num 7) (Boolean False))
+Nothing
+
+*Main> typeofM [] (Id "x")
+Nothing
+
+*Main> typeofM [] (Boolean True)
+Just TBool
+*Main> typeofM [] (Boolean False)
+Just TBool
+
+*Main> typeofM [] (And (Boolean True) (Boolean True))
+Just TBool
+*Main> typeofM [] (And (Boolean True) (Boolean False))
+Just TBool
+*Main> typeofM [] (And (Boolean False) (Boolean True))
+Just TBool
+*Main> typeofM [] (And (Boolean False) (Boolean False))
+Just TBool
+*Main> typeofM [] (And (Boolean False) (Num 4))
+Nothing
+*Main> typeofM [] (And (Boolean False) (Id "x"))
+Nothing
+*Main> typeofM [] (And (Id "x") (Boolean False))
+Nothing
+*Main> typeofM [] (And (Num 3) (Boolean False))
+Nothing
+
+*Main> typeofM [] (Or (Boolean True) (Boolean True))
+Just TBool
+*Main> typeofM [] (Or (Boolean True) (Boolean False))
+Just TBool
+*Main> typeofM [] (Or (Boolean False) (Boolean True))
+Just TBool
+*Main> typeofM [] (Or (Boolean False) (Boolean False))
+Just TBool
+
+*Main> typeofM [] (Leq (Num 4) (Num 8))
+Just TBool
+*Main> typeofM [] (Leq (Num 8) (Num 8))
+Just TBool
+*Main> typeofM [] (Leq (Num 8) (Num 4))
+Just TBool
+*Main> typeofM [] (Leq (Num 8) (Boolean True))
+Nothing
+*Main> typeofM [] (Leq (Boolean False) (Num 4))
+Nothing
+
+*Main> typeofM [] (IsZero (Num 5))
+Just TBool
+*Main> typeofM [] (IsZero (Num 0))
+Just TBool
+*Main> typeofM [] (IsZero (Num (-5)))
+Nothing
+*Main> typeofM [] (IsZero (Boolean True))
+Nothing
+
+*Main> typeofM [] (If (Boolean True) (Boolean True) (Boolean True))
+Just TBool
+*Main> typeofM [] (If (Boolean True) (Boolean True) (Num 4))
+Nothing
+*Main> typeofM [] (If (Boolean True) (Num 7) (Boolean True))
+Nothing
+*Main> typeofM [] (If (Boolean True) (Num 7) (Num 4))
+Just TBool
+*Main> typeofM [] (If (Num 4) (Boolean True) (Boolean True))
+Nothing
