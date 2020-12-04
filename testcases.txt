@@ -233,8 +233,6 @@ Just (BooleanV False)
 *Main> evalM [] (If (Num 19) (Num 15) (Num 4))
 Just (NumV 4)
 
-
-
 -- evalM invalid value types in operations Cases
 
 *Main> evalM [] (Plus (Num 4) (Boolean True))
@@ -345,21 +343,52 @@ Just TNum
 *Main> typeofM [] (Bind "x" (Num 4) (Num 7))
 Just TNum
 *Main> typeofM [] (Bind "x" (Num 4) (Boolean True))
-Nothing
-*Main> typeofM [] (Bind "x" (Boolean True) (Num 7))
-Nothing
-*Main> typeofM [] (Bind "x" (Boolean True) (Boolean False))
+Just TNum
+*Main> typeofM [] (Bind "x" (Num 4) (Id "x"))
+Just TNum
+*Main> typeofM [] (Bind "x" (Boolean False) (Num 7))
 Just TBool
-
--------------------------------------------------------------------------------
-
-*Main> typeofM [] (App (Boolean True) (Boolean False))
+*Main> typeofM [] (Bind "x" (Boolean False) (Boolean True))
 Just TBool
-*Main> typeofM [] (App (Boolean True) (Num 4))
+*Main> typeofM [] (Bind "x" (Boolean False) (Id "x"))
+Just TBool
+*Main> typeofM [] (Bind "x" (Id "y") (Num 7))
+Just TNum
+*Main> typeofM [] (Bind "x" (Id "y") (Boolean False))
+Just TBool
+*Main> typeofM [] (Bind "x" (Id "y") (Id "z"))
 Nothing
+
+*Main> typeofM [] (Lambda "x" TNum (Num 5))
+Just TNum
+*Main> typeofM [] (Lambda "x" TNum (Boolean True))
+Nothing
+*Main> typeofM [] (Lambda "x" TNum (Id "x"))
+Nothing
+*Main> typeofM [] (Lambda "x" TBool (Num 5))
+Nothing
+*Main> typeofM [] (Lambda "x" TBool (Boolean True))
+Just TBool
+*Main> typeofM [] (Lambda "x" TBool (Id "y"))
+Nothing
+
 *Main> typeofM [] (App (Num 7) (Num 4))
 Just TNum
-*Main> typeofM [] (App (Num 7) (Boolean False))
+*Main> typeofM [] (App (Num 7) (Boolean True))
+Just TNum
+*Main> typeofM [] (App (Num 7) (Id "x"))
+Just TNum
+*Main> typeofM [] (App (Boolean False) (Num 4))
+Just TBool
+*Main> typeofM [] (App (Boolean False) (Boolean True))
+Just TBool
+*Main> typeofM [] (App (Boolean False) (Id "y"))
+Just TBool
+*Main> typeofM [] (App (Id "y") (Num 4))
+Just TNum
+*Main> typeofM [] (App (Id "y") (Boolean False))
+Just TBool
+*Main> typeofM [] (App (Id "y") (Id "z"))
 Nothing
 
 *Main> typeofM [] (Id "x")

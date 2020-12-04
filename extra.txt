@@ -1,3 +1,7 @@
+-- file Name: extra.txt
+-- file Author: Marco Borth, 2894114
+-- description: text file containing code/pseudocode/terminal input for project4.hs.
+
 evalM envi (Boolean b) = Just (BooleanV (evalBool (Boolean b) ) )
 --  if b == True || b == False
 --    then Just (BooleanV b)
