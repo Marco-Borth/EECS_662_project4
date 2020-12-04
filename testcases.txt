@@ -17,31 +17,6 @@ Just (NumV 4)
 *Main> evalM [] (Plus (Num 0) (Num 0))
 Just (NumV 0)
 
-*Main> evalM [] (Plus (Num 4) (Boolean True))
-Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
-CallStack (from HasCallStack):
-  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
-*Main> evalM [] (Plus (Num 4) (Boolean False))
-Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
-CallStack (from HasCallStack):
-  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
-*Main> evalM [] (Plus (Boolean True) (Num 4))
-Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
-CallStack (from HasCallStack):
-  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
-*Main> evalM [] (Plus (Boolean False) (Num 4))
-Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
-CallStack (from HasCallStack):
-  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
-*Main> evalM [] (Plus (Num 4) (And (Boolean True) (Boolean False)))
-Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
-CallStack (from HasCallStack):
-  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:54:21 in main:Main
-*Main> evalM [] (Plus (Num 4) (Or (Boolean True) (Boolean False)))
-Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
-CallStack (from HasCallStack):
-  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:55:20 in main:Main
-
 *Main> evalM [] (Minus (Num 9) (Num 4))
 Just (NumV 5)
 *Main> evalM [] (Minus (Num 9) (Num 8))
@@ -119,6 +94,129 @@ Just (BooleanV False)
 Just (BooleanV False)
 *Main> evalM [] (And (Boolean False) (Boolean False))
 Just (BooleanV False)
+
+*Main> evalM [] (Or (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (Or (Boolean True) (Boolean False))
+Just (BooleanV True)
+*Main> evalM [] (Or (Boolean False) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (Or (Boolean False) (Boolean False))
+Just (BooleanV False)
+
+*Main> evalM [] (IsZero (Num 6))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Num (-6)))
+Just (BooleanV *** Exception: ERROR: Only Natural Numbers are Allowed for Int operations
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:61:10 in main:Main
+*Main> evalM [] (IsZero (Num 0))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Plus (Num 4) (Num 5)))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Plus (Num 0) (Num 0)))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Minus (Num 6) (Num 3)))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Minus (Num 6) (Num 9)))
+Just (BooleanV *** Exception: ERROR: Resulting Difference must be Natural
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:73:14 in main:Main
+*Main> evalM [] (IsZero (Minus (Num 6) (Num 0)))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Mult (Num 6) (Num 9)))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Mult (Num 6) (Num 0)))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Mult (Num 0) (Num 9)))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Mult (Num 0) (Num 0)))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Div (Num 40) (Num 8)))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Div (Num 40) (Num 40)))
+Just (BooleanV False)
+*Main> evalM [] (IsZero (Div (Num 40) (Num 42)))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Div (Num 0) (Num 8)))
+Just (BooleanV True)
+*Main> evalM [] (IsZero (Div (Num 40) (Num 0)))
+Just (BooleanV *** Exception: ERROR: Cannot divide by '0'
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:84:14 in main:Main
+*Main> evalM [] (IsZero (Div (Num 0) (Num 0)))
+Just (BooleanV *** Exception: ERROR: Cannot divide by '0'
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:84:14 in main:Main
+*Main> evalM [] (IsZero (Boolean True))
+Just (BooleanV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (IsZero (Boolean False))
+Just (BooleanV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+
+*Main> evalM [] (Leq (Num 2) (Num 4))
+Just (BooleanV True)
+*Main> evalM [] (Leq (Num 4) (Num 4))
+Just (BooleanV True)
+*Main> evalM [] (Leq (Num 5) (Num 4))
+Just (BooleanV False)
+*Main> evalM [] (Leq (Num 5) (Plus (Num 2) (Num 6)))
+Just (BooleanV True)
+*Main> evalM [] (Leq (Plus (Num 2) (Num 6)) (Num 4))
+Just (BooleanV False)
+*Main>
+
+
+
+-- evalM invalid value types in operations Cases
+
+*Main> evalM [] (Plus (Num 4) (Boolean True))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Num 4) (Boolean False))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Boolean True) (Num 4))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Boolean False) (Num 4))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Num 4) (And (Boolean True) (Boolean False)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:54:21 in main:Main
+*Main> evalM [] (Plus (Num 4) (Or (Boolean True) (Boolean False)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:55:20 in main:Main
+*Main> evalM [] (Plus (Num 4) (Leq (Num 2) (Num 6)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:56:21 in main:Main
+*Main> evalM [] (Plus (Num 4) (Leq (Num 6) (Num 6)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:56:21 in main:Main
+*Main> evalM [] (Plus (Num 4) (Leq (Num 7) (Num 6)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:56:21 in main:Main
+*Main> evalM [] (Plus (Num 4) (IsZero (Num 5)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:56:25 in main:Main
+*Main> evalM [] (Plus (Num 4) (IsZero (Num 0)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:56:25 in main:Main
 
 *Main> evalM [] (And (Boolean True) (Num 4))
 Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!

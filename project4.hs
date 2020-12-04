@@ -53,6 +53,8 @@ evalInt :: FBAE -> Int
 evalInt (Boolean b) = error "ERROR: Boolean Detected within Int operation!"
 evalInt (And l r) = error "ERROR: Boolean Detected within Int operation!"
 evalInt (Or l r) = error "ERROR: Boolean Detected within Int operation!"
+evalInt (Leq l r) = error "ERROR: Boolean Detected within Int operation!"
+evalInt (IsZero zero) = error "ERROR: Boolean Detected within Int operation!"
 --evalInt
 
 evalInt (Num n) =
@@ -110,6 +112,25 @@ evalBool (And l r) =
         then y
         else False
 
+evalBool (Or l r) =
+  let x = evalBool(l)
+      y = evalBool(r)
+      in if x == True
+        then x
+        else y
+
+evalBool (Leq l r) =
+  let x = evalInt(l)
+      y = evalInt(r)
+      in if x <= y
+        then True
+        else False
+
+evalBool (IsZero zero ) =
+  if evalInt zero == 0
+    then True
+    else False
+
 -- Statically scoped eval
 
 evalM :: Env -> FBAE -> (Maybe FBAEVal)
@@ -120,9 +141,15 @@ evalM e (Mult l r) = Just (NumV (evalInt (Mult l r) ) )
 evalM e (Div l r) = Just (NumV (evalInt (Div l r) ) )
 
 -- evalM e (Bind i v b) = Just (ClosureV (Bind i v b) )
+-- evalM e (Lambda i b) = Just (ClosureV (Lambda i b) )
+-- evalM e (App f a) = Just (ClosureV (App f a) )
+-- evalM e (Id i) = Just (ClosureV (Id i) )
 
 evalM e (Boolean b) = Just (BooleanV (evalBool (Boolean b) ) )
 evalM e (And l r) = Just (BooleanV (evalBool (And l r) ) )
+evalM e (Or l r) = Just (BooleanV (evalBool (Or l r) ) )
+evalM e (Leq l r) = Just (BooleanV (evalBool (Leq l r) ) )
+evalM e (IsZero zero) = Just (BooleanV (evalBool (IsZero zero) ) )
 evalM _ _ = Nothing
 
 -- Type inference function
