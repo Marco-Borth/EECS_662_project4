@@ -4,19 +4,43 @@ Just (NumV 4)
 *Main> evalM [] (Num 0)
 Just (NumV 0)
 *Main> evalM [] (Num (-1))
-Just (NumV *** Exception: ERROR: Only Natural Numbers are Allowed
+Just (NumV *** Exception: ERROR: Only Natural Numbers are Allowed for Int operations
 CallStack (from HasCallStack):
   error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:50:10 in main:Main
 
 *Main> evalM [] (Plus (Num 4) (Num 9))
 Just (NumV 13)
-
 *Main> evalM [] (Plus (Num 0) (Num 9))
 Just (NumV 9)
 *Main> evalM [] (Plus (Num 4) (Num 0))
 Just (NumV 4)
 *Main> evalM [] (Plus (Num 0) (Num 0))
 Just (NumV 0)
+
+*Main> evalM [] (Plus (Num 4) (Boolean True))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Num 4) (Boolean False))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Boolean True) (Num 4))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Boolean False) (Num 4))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:53:23 in main:Main
+*Main> evalM [] (Plus (Num 4) (And (Boolean True) (Boolean False)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:54:21 in main:Main
+*Main> evalM [] (Plus (Num 4) (Or (Boolean True) (Boolean False)))
+Just (NumV *** Exception: ERROR: Boolean Detected within Int operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:55:20 in main:Main
 
 *Main> evalM [] (Minus (Num 9) (Num 4))
 Just (NumV 5)
@@ -86,3 +110,37 @@ CallStack (from HasCallStack):
 Just (BooleanV True)
 *Main> evalM [] (Boolean False)
 Just (BooleanV False)
+
+*Main> evalM [] (And (Boolean True) (Boolean True))
+Just (BooleanV True)
+*Main> evalM [] (And (Boolean True) (Boolean False))
+Just (BooleanV False)
+*Main> evalM [] (And (Boolean False) (Boolean True))
+Just (BooleanV False)
+*Main> evalM [] (And (Boolean False) (Boolean False))
+Just (BooleanV False)
+
+*Main> evalM [] (And (Boolean True) (Num 4))
+Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:85:20 in main:Main
+*Main> evalM [] (And (Num 5) (Boolean True))
+Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:85:20 in main:Main
+*Main> evalM [] (And (Boolean True) (Plus (Num 4) (Num 5)))
+Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:93:23 in main:Main
+*Main> evalM [] (And (Boolean True) (Minus (Num 4) (Num 5)))
+Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:94:24 in main:Main
+*Main> evalM [] (And (Boolean True) (Mult (Num 4) (Num 5)))
+Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:95:23 in main:Main
+*Main> evalM [] (And (Boolean True) (Div (Num 4) (Num 5)))
+Just (BooleanV *** Exception: ERROR: Int Detected within Boolean Operation!
+CallStack (from HasCallStack):
+  error, called at /Users/marco/Desktop/EECS_662/EECS_662_project4/project4.hs:96:22 in main:Main

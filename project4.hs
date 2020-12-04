@@ -50,10 +50,15 @@ divide x y | x - y >= 0 = 1 + divide (x - y) y
 -- eval operation for Int
 
 evalInt :: FBAE -> Int
+evalInt (Boolean b) = error "ERROR: Boolean Detected within Int operation!"
+evalInt (And l r) = error "ERROR: Boolean Detected within Int operation!"
+evalInt (Or l r) = error "ERROR: Boolean Detected within Int operation!"
+--evalInt
+
 evalInt (Num n) =
   if n >= 0
     then n :: Int
-    else error "ERROR: Only Natural Numbers are Allowed"
+    else error "ERROR: Only Natural Numbers are Allowed for Int operations"
 
 evalInt (Plus l r) =
   let x = evalInt(l)
@@ -82,7 +87,21 @@ evalInt (Div l r) =
 -- eval operation for Bool
 
 evalBool :: FBAE -> Bool
+--evalBool (Num n) = evalBool ( And (Boolean True) (Num n) )
+--  let x = And ( (Boolean True) (Num n) do {
+--  error "ERROR: Int Detected!"
+--  return Nothing
+-- }
+evalBool (Num n) = error "ERROR: Int Detected within Boolean Operation!"
+evalBool (Plus l r) = error "ERROR: Int Detected within Boolean Operation!"
+evalBool (Minus l r) = error "ERROR: Int Detected within Boolean Operation!"
+evalBool (Mult l r) = error "ERROR: Int Detected within Boolean Operation!"
+evalBool (Div l r) = error "ERROR: Int Detected within Boolean Operation!"
+
 evalBool (Boolean b) = b
+--  if b == True || b == False
+--    then b
+--    else error "ERROR: Only Boolean Values are Allowed within Boolean operations"
 
 evalBool (And l r) =
   let x = evalBool(l)
